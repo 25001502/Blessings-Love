@@ -1,0 +1,1476 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>For Lorraine // Coded With Love</title>
+  <meta name="description" content="A phone-friendly romantic HTML, CSS, and JavaScript page built especially for Lorraine." />
+  <style>
+    :root {
+      --bg-1: #08070d;
+      --bg-2: #130b1b;
+      --bg-3: #1d1128;
+      --panel: rgba(255, 255, 255, 0.08);
+      --panel-2: rgba(255, 255, 255, 0.05);
+      --panel-border: rgba(255, 255, 255, 0.12);
+      --text: #faf6ff;
+      --muted: #d6c8ea;
+      --accent: #ff5ea8;
+      --accent-2: #b16bff;
+      --accent-3: #8fe9ff;
+      --shadow: 0 18px 60px rgba(0, 0, 0, 0.35);
+      --radius-xl: 28px;
+      --radius-lg: 22px;
+      --radius-md: 18px;
+      --radius-sm: 14px;
+      --max: 1120px;
+      --pad: clamp(16px, 3vw, 28px);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      min-height: 100vh;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 18% 12%, rgba(255, 94, 168, 0.17), transparent 28%),
+        radial-gradient(circle at 85% 8%, rgba(177, 107, 255, 0.18), transparent 28%),
+        radial-gradient(circle at 50% 82%, rgba(143, 233, 255, 0.11), transparent 33%),
+        linear-gradient(160deg, var(--bg-1), var(--bg-2) 46%, var(--bg-3));
+      overflow-x: hidden;
+    }
+
+    body::before,
+    body::after {
+      content: "";
+      position: fixed;
+      inset: -20%;
+      z-index: -3;
+      pointer-events: none;
+      background: conic-gradient(from 180deg at 50% 50%, rgba(255,94,168,0.07), rgba(177,107,255,0.08), rgba(143,233,255,0.06), rgba(255,94,168,0.07));
+      filter: blur(90px);
+      animation: drift 26s linear infinite;
+    }
+
+    body::after {
+      animation-direction: reverse;
+      animation-duration: 34s;
+      opacity: 0.55;
+    }
+
+    @keyframes drift {
+      0% { transform: rotate(0deg) scale(1); }
+      50% { transform: rotate(180deg) scale(1.08); }
+      100% { transform: rotate(360deg) scale(1); }
+    }
+
+    #bgCanvas {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -2;
+      opacity: 0.9;
+    }
+
+    .noise {
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      pointer-events: none;
+      opacity: 0.03;
+      background-image: radial-gradient(circle, rgba(255,255,255,.9) 0.6px, transparent 0.6px);
+      background-size: 18px 18px;
+      mix-blend-mode: soft-light;
+    }
+
+    .shell {
+      width: min(calc(100% - 28px), var(--max));
+      margin-inline: auto;
+    }
+
+    .loader {
+      position: fixed;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      padding: 22px;
+      background: linear-gradient(180deg, rgba(8, 7, 13, 0.93), rgba(12, 8, 19, 0.97));
+      z-index: 100;
+      transition: opacity .55s ease, visibility .55s ease;
+    }
+
+    .loader.hidden {
+      opacity: 0;
+      visibility: hidden;
+    }
+
+    .loader-box {
+      width: min(430px, 100%);
+      padding: 24px;
+      border-radius: 26px;
+      background: rgba(255,255,255,0.07);
+      border: 1px solid rgba(255,255,255,0.12);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(16px);
+    }
+
+    .loader-label {
+      font-size: 0.74rem;
+      letter-spacing: .22em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 10px;
+    }
+
+    .loader-title {
+      font-size: clamp(1.35rem, 4vw, 2rem);
+      line-height: 1.05;
+      font-weight: 850;
+      margin-bottom: 12px;
+    }
+
+    .loader-sub {
+      color: rgba(250,246,255,0.8);
+      line-height: 1.65;
+      margin-bottom: 16px;
+      font-size: 0.98rem;
+    }
+
+    .bar {
+      height: 10px;
+      border-radius: 999px;
+      overflow: hidden;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .bar span {
+      display: block;
+      width: 0;
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, var(--accent), var(--accent-2), var(--accent-3));
+      animation: loading 2.25s ease forwards;
+      box-shadow: 0 0 25px rgba(255,94,168,0.4);
+    }
+
+    @keyframes loading {
+      to { width: 100%; }
+    }
+
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      padding-top: max(14px, env(safe-area-inset-top));
+      backdrop-filter: blur(12px);
+      background: linear-gradient(180deg, rgba(8,7,13,0.7), rgba(8,7,13,0));
+    }
+
+    .nav {
+      margin-top: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      padding: 14px 16px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.1);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.18);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 0;
+      font-weight: 750;
+      letter-spacing: .03em;
+    }
+
+    .brand-badge {
+      width: 40px;
+      height: 40px;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      background: linear-gradient(135deg, rgba(255,94,168,0.24), rgba(177,107,255,0.24));
+      border: 1px solid rgba(255,255,255,0.14);
+      flex-shrink: 0;
+      box-shadow: inset 0 0 18px rgba(255,255,255,0.04);
+    }
+
+    .brand span:last-child {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .nav a,
+    .btn,
+    button {
+      appearance: none;
+      border: 1px solid transparent;
+      background: transparent;
+      color: var(--text);
+      font: inherit;
+      text-decoration: none;
+      border-radius: 999px;
+      padding: 12px 16px;
+      min-height: 46px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: transform .22s ease, background .22s ease, border-color .22s ease, box-shadow .22s ease;
+    }
+
+    .nav a:hover,
+    .btn:hover,
+    button:hover,
+    .nav a:focus-visible,
+    .btn:focus-visible,
+    button:focus-visible {
+      transform: translateY(-2px);
+      background: rgba(255,255,255,0.06);
+      border-color: rgba(255,255,255,0.12);
+      box-shadow: 0 10px 25px rgba(0,0,0,0.18);
+      outline: none;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, rgba(255,94,168,.95), rgba(177,107,255,.9));
+      border-color: rgba(255,255,255,0.16);
+      box-shadow: 0 12px 32px rgba(255, 94, 168, 0.24);
+    }
+
+    .ghost {
+      background: rgba(255,255,255,0.04);
+      border-color: rgba(255,255,255,0.1);
+    }
+
+    .hero {
+      min-height: 100svh;
+      display: grid;
+      place-items: center;
+      padding: 56px 0 28px;
+    }
+
+    .hero-grid,
+    .split,
+    .grid-3 {
+      display: grid;
+      gap: 18px;
+    }
+
+    .hero-grid {
+      grid-template-columns: 1.08fr 0.92fr;
+      align-items: stretch;
+      width: 100%;
+    }
+
+    .split {
+      grid-template-columns: 1fr 1fr;
+      align-items: stretch;
+    }
+
+    .grid-3 {
+      grid-template-columns: repeat(3, 1fr);
+    }
+
+    .panel {
+      position: relative;
+      overflow: hidden;
+      background: var(--panel);
+      border: 1px solid var(--panel-border);
+      border-radius: var(--radius-xl);
+      backdrop-filter: blur(16px);
+      box-shadow: var(--shadow);
+    }
+
+    .panel::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background: linear-gradient(135deg, rgba(255,255,255,.07), transparent 34%, transparent 66%, rgba(255,255,255,.05));
+    }
+
+    .hero-card,
+    .display-card,
+    .feature-card,
+    .script-console,
+    .letter-box,
+    .big-card {
+      padding: clamp(20px, 3vw, 38px);
+    }
+
+    .hero-card {
+      min-height: 590px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 18px;
+    }
+
+    .display-card {
+      min-height: 590px;
+      display: grid;
+      gap: 16px;
+      grid-template-rows: auto 1fr auto;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      width: fit-content;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 13px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      color: var(--muted);
+      font-size: 0.79rem;
+      letter-spacing: .16em;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      font-size: clamp(2.5rem, 8vw, 5.9rem);
+      line-height: 0.93;
+      letter-spacing: -0.05em;
+      font-weight: 900;
+      max-width: 10ch;
+    }
+
+    h2 {
+      font-size: clamp(2rem, 5vw, 4.2rem);
+      line-height: 0.96;
+      letter-spacing: -0.045em;
+      font-weight: 850;
+    }
+
+    .gradient-text {
+      background: linear-gradient(135deg, #ffffff 0%, #ffd7eb 24%, #ff8fc5 48%, #b16bff 76%, #90ecff 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    p {
+      color: rgba(250,246,255,0.82);
+      line-height: 1.8;
+      font-size: 1rem;
+    }
+
+    .hero-copy {
+      max-width: 60ch;
+      font-size: clamp(1rem, 1.6vw, 1.08rem);
+    }
+
+    .hero-actions,
+    .run-row,
+    .chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-top: 6px;
+    }
+
+    .stat {
+      padding: 18px;
+      border-radius: 18px;
+      background: rgba(255,255,255,0.045);
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .stat strong {
+      display: block;
+      font-size: clamp(1.2rem, 3vw, 1.55rem);
+      margin-bottom: 4px;
+    }
+
+    .stat span {
+      color: rgba(250,246,255,0.68);
+      font-size: 0.92rem;
+      line-height: 1.5;
+    }
+
+    .orbit-wrap {
+      position: relative;
+      min-height: 340px;
+      display: grid;
+      place-items: center;
+      border-radius: 24px;
+      overflow: hidden;
+      background: radial-gradient(circle at center, rgba(255,255,255,0.06), rgba(255,255,255,0.02) 48%, transparent 70%);
+    }
+
+    .orb-core {
+      position: relative;
+      width: clamp(120px, 22vw, 162px);
+      height: clamp(120px, 22vw, 162px);
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      font-size: clamp(2rem, 5vw, 2.35rem);
+      font-weight: 850;
+      background:
+        radial-gradient(circle at 30% 30%, rgba(255,255,255,.25), rgba(255,255,255,.07) 40%, rgba(255,255,255,.02) 72%),
+        linear-gradient(135deg, rgba(255,94,168,.34), rgba(177,107,255,.34));
+      border: 1px solid rgba(255,255,255,0.16);
+      box-shadow: inset 0 0 24px rgba(255,255,255,.08), 0 0 60px rgba(255,94,168,.22);
+      animation: pulseCore 4.2s ease-in-out infinite;
+    }
+
+    @keyframes pulseCore {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+    }
+
+    .ring,
+    .ring.two {
+      position: absolute;
+      border-radius: 50%;
+      border: 1px solid rgba(255,255,255,0.1);
+      animation: spin 16s linear infinite;
+    }
+
+    .ring { width: min(76vw, 280px); height: min(76vw, 280px); }
+    .ring.two { width: min(95vw, 360px); height: min(95vw, 360px); animation-direction: reverse; animation-duration: 22s; }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .orbit {
+      --size: clamp(42px, 9vw, 50px);
+      position: absolute;
+      width: var(--size);
+      height: var(--size);
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      font-size: 1rem;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.14);
+      box-shadow: 0 10px 24px rgba(0,0,0,0.22);
+      backdrop-filter: blur(8px);
+    }
+
+    .o1 { top: -22px; left: 50%; transform: translateX(-50%); }
+    .o2 { right: -8px; top: 52%; transform: translateY(-50%); }
+    .o3 { bottom: -16px; left: 24%; }
+    .o4 { left: -8px; top: 28%; }
+    .o5 { top: 9%; right: 18%; }
+    .o6 { bottom: 18%; right: 10%; }
+
+    .mini-terminal {
+      padding: 16px;
+      border-radius: 20px;
+      background: rgba(8,8,14,0.55);
+      border: 1px solid rgba(255,255,255,0.08);
+      font-family: "SFMono-Regular", ui-monospace, Menlo, Consolas, monospace;
+    }
+
+    .term-head {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.18);
+    }
+
+    .dot:nth-child(1) { background: #ff5f57; }
+    .dot:nth-child(2) { background: #ffbd2e; }
+    .dot:nth-child(3) { background: #28c840; }
+
+    .type-line {
+      min-height: 104px;
+      line-height: 1.8;
+      color: #efe9fa;
+      white-space: pre-wrap;
+      font-size: 0.93rem;
+    }
+
+    .caret {
+      display: inline-block;
+      width: 8px;
+      height: 1.15em;
+      background: rgba(255,255,255,0.88);
+      margin-left: 4px;
+      vertical-align: text-bottom;
+      animation: blink 1s steps(1) infinite;
+    }
+
+    @keyframes blink { 50% { opacity: 0; } }
+
+    main section {
+      padding: 22px 0 72px;
+    }
+
+    .section-head {
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 14px;
+      margin-bottom: 22px;
+    }
+
+    .section-head p {
+      max-width: 62ch;
+    }
+
+    .feature-card {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      min-height: 240px;
+      transition: transform .2s ease;
+      transform-style: preserve-3d;
+    }
+
+    .feature-icon {
+      width: 54px;
+      height: 54px;
+      display: grid;
+      place-items: center;
+      border-radius: 18px;
+      background: linear-gradient(135deg, rgba(255,94,168,.18), rgba(177,107,255,.18));
+      border: 1px solid rgba(255,255,255,.12);
+      font-size: 1.35rem;
+    }
+
+    .feature-card h3,
+    .timeline-item h4,
+    .env-letter h3 {
+      font-size: 1.18rem;
+    }
+
+    .code-chip,
+    .chip {
+      width: fit-content;
+      border-radius: 999px;
+      font-size: 0.88rem;
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .code-chip {
+      margin-top: auto;
+      padding: 9px 12px;
+      font-family: "SFMono-Regular", ui-monospace, monospace;
+      color: #ffe3f1;
+      background: rgba(255,94,168,0.09);
+      border-color: rgba(255,94,168,0.18);
+    }
+
+    .timeline {
+      display: grid;
+      gap: 12px;
+    }
+
+    .timeline-item {
+      display: grid;
+      grid-template-columns: 88px 1fr;
+      gap: 16px;
+      align-items: start;
+      padding: 18px;
+      border-radius: 20px;
+      background: rgba(255,255,255,0.045);
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .timeline-time {
+      font-family: "SFMono-Regular", ui-monospace, monospace;
+      font-size: 0.86rem;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      color: #ffd9eb;
+    }
+
+    .script-console,
+    .letter-box {
+      min-height: 430px;
+    }
+
+    .script-console pre {
+      min-height: 240px;
+      padding: 16px;
+      margin-top: 14px;
+      border-radius: 18px;
+      background: rgba(10,10,16,0.55);
+      border: 1px solid rgba(255,255,255,0.08);
+      white-space: pre-wrap;
+      word-break: break-word;
+      font-family: "SFMono-Regular", ui-monospace, monospace;
+      line-height: 1.8;
+      font-size: 0.92rem;
+      color: #f8f0ff;
+    }
+
+    .letter-box {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 18px;
+    }
+
+    .envelope {
+      position: relative;
+      width: min(360px, 100%);
+      aspect-ratio: 1.28 / 1;
+      margin: 10px auto 0;
+      perspective: 1000px;
+      cursor: pointer;
+    }
+
+    .env-body,
+    .env-flap,
+    .env-letter {
+      position: absolute;
+      inset: 0;
+      border-radius: 18px;
+      border: 1px solid rgba(255,255,255,0.12);
+      backdrop-filter: blur(12px);
+    }
+
+    .env-body {
+      overflow: hidden;
+      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
+    }
+
+    .env-body::before,
+    .env-body::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(255,94,168,.2), rgba(177,107,255,.2));
+      clip-path: polygon(0 0, 50% 55%, 100% 0, 100% 100%, 0 100%);
+      opacity: 0.7;
+    }
+
+    .env-body::after {
+      clip-path: polygon(0 100%, 50% 44%, 100% 100%);
+      opacity: 0.92;
+    }
+
+    .env-flap {
+      transform-origin: top center;
+      clip-path: polygon(0 0, 50% 58%, 100% 0);
+      background: linear-gradient(135deg, rgba(255,255,255,.09), rgba(255,255,255,.03));
+      transition: transform .8s cubic-bezier(.2,.8,.2,1);
+      z-index: 3;
+    }
+
+    .env-letter {
+      inset: 10% 10% 14%;
+      padding: 20px;
+      color: #241726;
+      background: linear-gradient(180deg, rgba(255,255,255,.92), rgba(255,249,253,.98));
+      transform: translateY(22px);
+      transition: transform .8s cubic-bezier(.2,.8,.2,1);
+      z-index: 2;
+      overflow: hidden;
+    }
+
+    .env-letter p {
+      color: rgba(36,23,38,0.88);
+      font-size: 0.96rem;
+      line-height: 1.72;
+    }
+
+    .envelope.open .env-flap {
+      transform: rotateX(180deg);
+    }
+
+    .envelope.open .env-letter {
+      transform: translateY(-28px);
+    }
+
+    .chip {
+      padding: 10px 14px;
+      background: rgba(255,255,255,0.06);
+      color: rgba(250,246,255,0.82);
+    }
+
+    .big-card {
+      text-align: center;
+      overflow: hidden;
+      padding-bottom: 88px;
+    }
+
+    .big-card p {
+      max-width: 58ch;
+      margin: 0 auto 22px;
+    }
+
+    .heart-burst {
+      position: absolute;
+      left: 50%;
+      bottom: 26px;
+      transform: translateX(-50%);
+      pointer-events: none;
+    }
+
+    .heart-burst span {
+      position: absolute;
+      font-size: 1.12rem;
+      opacity: 0;
+      animation: burst 2s ease-in-out infinite;
+    }
+
+    .heart-burst span:nth-child(1) { left: -120px; animation-delay: 0s; }
+    .heart-burst span:nth-child(2) { left: -60px; animation-delay: .2s; }
+    .heart-burst span:nth-child(3) { left: 0; animation-delay: .4s; }
+    .heart-burst span:nth-child(4) { left: 60px; animation-delay: .6s; }
+    .heart-burst span:nth-child(5) { left: 120px; animation-delay: .8s; }
+
+    @keyframes burst {
+      0% { transform: translateY(0) scale(.55); opacity: 0; }
+      20% { opacity: 1; }
+      100% { transform: translateY(-110px) scale(1.4); opacity: 0; }
+    }
+
+    footer {
+      padding: 0 0 calc(22px + env(safe-area-inset-bottom));
+      text-align: center;
+      color: rgba(250,246,255,0.56);
+      font-size: 0.92rem;
+    }
+
+    [data-reveal] {
+      opacity: 0;
+      transform: translateY(26px);
+      transition: opacity .8s ease, transform .8s ease;
+    }
+
+    [data-reveal].visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    @media (max-width: 980px) {
+      .hero-grid,
+      .split,
+      .grid-3 {
+        grid-template-columns: 1fr;
+      }
+
+      .hero {
+        min-height: auto;
+        padding-top: 40px;
+      }
+
+      .hero-card,
+      .display-card,
+      .script-console,
+      .letter-box {
+        min-height: auto;
+      }
+    }
+
+    @media (max-width: 720px) {
+      .shell {
+        width: min(calc(100% - 18px), var(--max));
+      }
+
+      .nav {
+        border-radius: 26px;
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .nav-links {
+        width: 100%;
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .nav a {
+        width: 100%;
+      }
+
+      h1 {
+        max-width: none;
+      }
+
+      .hero-copy {
+        font-size: 1rem;
+      }
+
+      .stats {
+        grid-template-columns: 1fr;
+      }
+
+      .timeline-item {
+        grid-template-columns: 1fr;
+      }
+
+      .run-row,
+      .hero-actions {
+        display: grid;
+        grid-template-columns: 1fr;
+      }
+
+      .run-row > *,
+      .hero-actions > * {
+        width: 100%;
+      }
+
+      .orbit-wrap {
+        min-height: 300px;
+      }
+
+      .type-line {
+        min-height: 92px;
+      }
+    }
+
+    @media (max-width: 520px) {
+      body::before,
+      body::after {
+        filter: blur(70px);
+      }
+
+      .panel,
+      .loader-box {
+        border-radius: 22px;
+      }
+
+      .hero-card,
+      .display-card,
+      .feature-card,
+      .script-console,
+      .letter-box,
+      .big-card,
+      .loader-box {
+        padding: 18px;
+      }
+
+      .nav-links {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .eyebrow {
+        font-size: 0.72rem;
+        letter-spacing: .14em;
+      }
+
+      .envelope {
+        width: 100%;
+      }
+
+      .env-letter {
+        inset: 9% 8% 14%;
+        padding: 18px;
+      }
+
+      .env-letter p {
+        font-size: 0.92rem;
+        line-height: 1.62;
+      }
+
+      .heart-burst span:nth-child(1) { left: -88px; }
+      .heart-burst span:nth-child(2) { left: -44px; }
+      .heart-burst span:nth-child(4) { left: 44px; }
+      .heart-burst span:nth-child(5) { left: 88px; }
+    }
+
+    @media (hover: none), (pointer: coarse) {
+      .feature-card:hover,
+      .nav a:hover,
+      .btn:hover,
+      button:hover {
+        transform: none;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+      #bgCanvas { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="loader" id="loader">
+    <div class="loader-box">
+      <div class="loader-label">Preparing</div>
+      <div class="loader-title">Building something beautiful for Lorraine...</div>
+      <div class="loader-sub">Not just a message. More like a small coded world that says I thought about you carefully.</div>
+      <div class="bar"><span></span></div>
+    </div>
+  </div>
+
+  <canvas id="bgCanvas"></canvas>
+  <div class="noise"></div>
+
+  <header id="top">
+    <div class="shell">
+      <div class="nav panel">
+        <div class="brand">
+          <div class="brand-badge">♡</div>
+          <span>for Lorraine</span>
+        </div>
+        <nav class="nav-links">
+          <a href="#vibe">Vibe</a>
+          <a href="#reasons">Reasons</a>
+          <a href="#script">Script</a>
+          <a href="#unlock" class="btn-primary">Open note</a>
+        </nav>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="shell hero-grid">
+        <div class="panel hero-card" data-reveal>
+          <div class="eyebrow">HTML • CSS • JavaScript • all for her</div>
+          <h1><span class="gradient-text">Lorraine,</span><br />I coded this with love.</h1>
+          <p class="hero-copy">
+            I did not want to send you something ordinary. I wanted to make something that moves, glows, breathes, and feels intentional —
+            because that is closer to how I see you. You are not basic, so the page for you could never be basic either.
+          </p>
+          <p class="hero-copy">
+            So this is my soft flex: part romantic gesture, part skill showcase, and fully made with you in mind.
+          </p>
+          <div class="hero-actions">
+            <a href="#script" class="btn btn-primary">Run my love script</a>
+            <a href="#unlock" class="btn ghost">Tap the hidden note</a>
+          </div>
+          <div class="stats">
+            <div class="stat">
+              <strong>1 girl</strong>
+              <span>behind this whole aesthetic: Lorraine</span>
+            </div>
+            <div class="stat">
+              <strong>100%</strong>
+              <span>hand-coded with intention and feeling</span>
+            </div>
+            <div class="stat">
+              <strong>∞</strong>
+              <span>admiration loops still running</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel display-card" data-reveal>
+          <div class="eyebrow">Live romantic interface</div>
+          <div class="orbit-wrap">
+            <div class="ring">
+              <div class="orbit o1">✨</div>
+              <div class="orbit o2">♡</div>
+              <div class="orbit o3">⚡</div>
+              <div class="orbit o4">✦</div>
+            </div>
+            <div class="ring two">
+              <div class="orbit o5">∞</div>
+              <div class="orbit o6">❀</div>
+            </div>
+            <div class="orb-core">L</div>
+          </div>
+          <div class="mini-terminal">
+            <div class="term-head">
+              <span class="dot"></span>
+              <span class="dot"></span>
+              <span class="dot"></span>
+            </div>
+            <div class="type-line" id="heroType"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="vibe">
+      <div class="shell">
+        <div class="section-head" data-reveal>
+          <div>
+            <div class="eyebrow">What this page is saying</div>
+            <h2>Not a plain letter.<br /><span class="gradient-text">A whole feeling.</span></h2>
+          </div>
+          <p>
+            The goal is simple: let Lorraine feel that this was built for her. Not copy-paste romance, but custom atmosphere, thoughtful words, and visuals that feel soft, warm, and intentional on a phone screen.
+          </p>
+        </div>
+
+        <div class="grid-3">
+          <article class="panel feature-card" data-reveal>
+            <div class="feature-icon">💖</div>
+            <h3>Specific to her</h3>
+            <p>
+              The wording is direct now: this is about Lorraine, the way she stands out, and the fact that she inspired you enough to build instead of just type.
+            </p>
+            <div class="code-chip">const muse = "Lorraine";</div>
+          </article>
+          <article class="panel feature-card" data-reveal>
+            <div class="feature-icon">📱</div>
+            <h3>Made for her phone</h3>
+            <p>
+              Bigger buttons, cleaner stacking, safer spacing, smoother motion, and a lighter visual load so it looks good when she opens it on mobile.
+            </p>
+            <div class="code-chip">responsive: true</div>
+          </article>
+          <article class="panel feature-card" data-reveal>
+            <div class="feature-icon">✨</div>
+            <h3>Still a flex</h3>
+            <p>
+              Even with the romance, it still shows skill: animated background, typing effects, interactive note, and polished one-file execution.
+            </p>
+            <div class="code-chip">ship({ vibe: "elegant" })</div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="reasons">
+      <div class="shell split">
+        <div class="panel script-console" data-reveal>
+          <div class="section-head" style="margin-bottom: 14px;">
+            <div>
+              <div class="eyebrow">Why her</div>
+              <h2 style="font-size: clamp(1.8rem, 4vw, 2.9rem);">The page says this softly.</h2>
+            </div>
+          </div>
+          <div class="timeline">
+            <div class="timeline-item">
+              <div class="timeline-time">01</div>
+              <div>
+                <h4>She feels worth the effort</h4>
+                <p>You do not code something like this for just anyone. The effort itself is part of the confession.</p>
+              </div>
+            </div>
+            <div class="timeline-item">
+              <div class="timeline-time">02</div>
+              <div>
+                <h4>Her name becomes the center of the design</h4>
+                <p>Lorraine is not mentioned like a placeholder. She sits at the heart of the visual composition, exactly where you want her attention to land.</p>
+              </div>
+            </div>
+            <div class="timeline-item">
+              <div class="timeline-time">03</div>
+              <div>
+                <h4>The love is there, just not forced</h4>
+                <p>It is romantic without being too heavy: confident, smooth, and still playful enough to feel natural.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel letter-box" id="unlock" data-reveal>
+          <div>
+            <div class="eyebrow">Tap to reveal</div>
+            <h2 style="font-size: clamp(1.8rem, 4vw, 2.9rem); margin-top: 12px;">A note for Lorraine.</h2>
+            <p style="margin-top: 12px;">
+              This part is more direct. Enough love to land properly, but still wrapped in style.
+            </p>
+          </div>
+
+          <div class="envelope" id="envelope" aria-label="Open note for Lorraine" role="button" tabindex="0">
+            <div class="env-body"></div>
+            <div class="env-letter">
+              <h3>For Lorraine</h3>
+              <p>
+                Lorraine, I wanted to do more than send you words. I wanted to build something that feels the way I look at you — soft, beautiful, memorable, and impossible to ignore. So yes, this is code... but it is also a little piece of my heart showing off for you.
+              </p>
+            </div>
+            <div class="env-flap"></div>
+          </div>
+
+          <div class="chips">
+            <span class="chip">for Lorraine only</span>
+            <span class="chip">coded with care</span>
+            <span class="chip">romance + skill</span>
+            <span class="chip">phone ready</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="script">
+      <div class="shell split">
+        <div class="panel script-console" data-reveal>
+          <div class="eyebrow">Executable feelings</div>
+          <h2 style="font-size: clamp(1.8rem, 4vw, 2.9rem); margin: 14px 0 10px;">Run the love script</h2>
+          <p>
+            Tap the button and let the page speak for you in a more playful, coded way.
+          </p>
+          <pre id="scriptOutput">&gt; waiting for a romantic command...</pre>
+          <div class="run-row">
+            <button class="btn btn-primary" id="runScriptBtn">Run script</button>
+            <button class="btn ghost" id="clearScriptBtn">Clear</button>
+          </div>
+        </div>
+
+        <div class="panel letter-box" data-reveal>
+          <div>
+            <div class="eyebrow">The more personal part</div>
+            <h2 style="font-size: clamp(1.8rem, 4vw, 2.9rem); margin: 14px 0 10px;">What I really mean</h2>
+            <p>
+              Lorraine, there is something about you that makes me want to create carefully. You have that kind of energy — the kind that makes ordinary things feel like they need more beauty, more thought, and more intention.
+            </p>
+            <p style="margin-top: 14px;">
+              So this page is me saying I like you in the language I know best: design, animation, code, and a little boldness.
+            </p>
+          </div>
+          <div class="chips" style="justify-content: flex-start;">
+            <span class="chip">HTML charm</span>
+            <span class="chip">CSS love</span>
+            <span class="chip">JavaScript rizz</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="shell">
+        <div class="panel big-card" data-reveal>
+          <div class="eyebrow" style="margin: 0 auto 14px;">Final render</div>
+          <h2>Some people send messages.<br /><span class="gradient-text">I built you a moment.</span></h2>
+          <p>
+            If this makes you smile, then it did exactly what I hoped it would do. Because honestly Lorraine, this was never just about code — it was about making something beautiful with your name at the center of it.
+          </p>
+          <div class="hero-actions" style="justify-content: center;">
+            <a href="#top" class="btn ghost">Replay it</a>
+            <button class="btn btn-primary" id="burstBtn">Launch hearts</button>
+          </div>
+          <div class="heart-burst" id="heartBurst">
+            <span>♡</span>
+            <span>♥</span>
+            <span>✦</span>
+            <span>♡</span>
+            <span>✨</span>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    Made with love, motion, and intention — for Lorraine.
+  </footer>
+
+  <script>
+    const loader = document.getElementById('loader');
+    window.addEventListener('load', () => {
+      setTimeout(() => loader.classList.add('hidden'), 1950);
+    });
+
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const isTouch = window.matchMedia('(hover: none), (pointer: coarse)').matches;
+
+    const heroType = document.getElementById('heroType');
+    const heroLines = [
+      '> booting lorraine.mode',
+      '> adding elegance, warmth, and intention...',
+      '> centering Lorraine in every visual layer...',
+      '> result: coded love, delivered smoothly'
+    ];
+
+    let heroText = '';
+    let lineIndex = 0;
+    let charIndex = 0;
+
+    function typeHero() {
+      if (reducedMotion) {
+        heroType.textContent = heroLines.join('\n');
+        return;
+      }
+      if (lineIndex < heroLines.length) {
+        const line = heroLines[lineIndex];
+        if (charIndex < line.length) {
+          heroText += line.charAt(charIndex);
+          heroType.innerHTML = heroText + '<span class="caret"></span>';
+          charIndex++;
+          setTimeout(typeHero, 28);
+        } else {
+          heroText += '\n';
+          lineIndex++;
+          charIndex = 0;
+          setTimeout(typeHero, 220);
+        }
+      } else {
+        heroType.innerHTML = heroText + '<span class="caret"></span>';
+      }
+    }
+    setTimeout(typeHero, 2050);
+
+    const revealObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) entry.target.classList.add('visible');
+      });
+    }, { threshold: 0.14 });
+
+    document.querySelectorAll('[data-reveal]').forEach(el => revealObserver.observe(el));
+
+    const envelope = document.getElementById('envelope');
+    function toggleEnvelope() {
+      envelope.classList.toggle('open');
+      const rect = envelope.getBoundingClientRect();
+      sprinkleHearts(rect.left + rect.width / 2, rect.top + rect.height / 2, isTouch ? 10 : 14);
+    }
+    envelope.addEventListener('click', toggleEnvelope);
+    envelope.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        toggleEnvelope();
+      }
+    });
+
+    const scriptOutput = document.getElementById('scriptOutput');
+    const runScriptBtn = document.getElementById('runScriptBtn');
+    const clearScriptBtn = document.getElementById('clearScriptBtn');
+    const scriptLines = [
+      '> npm run admire:lorraine',
+      '✓ reading heart state...',
+      '✓ confirming she inspired this whole page...',
+      '✓ rendering beauty, softness, and confidence...',
+      '✓ output: Lorraine, I like you more than plain words can show',
+      'return "romantic flex executed successfully";'
+    ];
+
+    let scriptRunning = false;
+
+    runScriptBtn.addEventListener('click', async () => {
+      if (scriptRunning) return;
+      scriptRunning = true;
+      scriptOutput.textContent = '';
+      if (reducedMotion) {
+        scriptOutput.textContent = scriptLines.join('\n');
+        scriptRunning = false;
+        return;
+      }
+      for (const line of scriptLines) {
+        await typeConsoleLine(line);
+      }
+      scriptRunning = false;
+      sprinkleHearts(window.innerWidth * 0.28, window.innerHeight * 0.62, isTouch ? 8 : 12);
+    });
+
+    clearScriptBtn.addEventListener('click', () => {
+      scriptOutput.textContent = '> waiting for a romantic command...';
+    });
+
+    function typeConsoleLine(line) {
+      return new Promise(resolve => {
+        let i = 0;
+        const current = scriptOutput.textContent === '> waiting for a romantic command...'
+          ? ''
+          : scriptOutput.textContent + '\n';
+        function tick() {
+          if (i <= line.length) {
+            scriptOutput.textContent = current + line.slice(0, i);
+            i++;
+            setTimeout(tick, 20);
+          } else {
+            resolve();
+          }
+        }
+        tick();
+      });
+    }
+
+    document.getElementById('burstBtn').addEventListener('click', (e) => {
+      const rect = e.currentTarget.getBoundingClientRect();
+      sprinkleHearts(rect.left + rect.width / 2, rect.top + rect.height / 2, isTouch ? 18 : 26);
+    });
+
+    function sprinkleHearts(x, y, count = 12) {
+      if (reducedMotion) return;
+      const symbols = ['♡', '♥', '✦', '✨'];
+      for (let i = 0; i < count; i++) {
+        const heart = document.createElement('div');
+        heart.textContent = symbols[Math.floor(Math.random() * symbols.length)];
+        heart.style.position = 'fixed';
+        heart.style.left = x + 'px';
+        heart.style.top = y + 'px';
+        heart.style.pointerEvents = 'none';
+        heart.style.fontSize = (Math.random() * 14 + 14) + 'px';
+        heart.style.zIndex = 90;
+        heart.style.opacity = '1';
+        document.body.appendChild(heart);
+
+        const angle = Math.random() * Math.PI * 2;
+        const distance = 55 + Math.random() * (isTouch ? 90 : 130);
+        const tx = Math.cos(angle) * distance;
+        const ty = Math.sin(angle) * distance - 40;
+        const rotate = (Math.random() * 120) - 60;
+
+        heart.animate([
+          { transform: 'translate(0,0) scale(0.55)', opacity: 0 },
+          { transform: 'translate(0,0) scale(1)', opacity: 1, offset: 0.18 },
+          { transform: `translate(${tx}px, ${ty}px) rotate(${rotate}deg) scale(1.35)`, opacity: 0 }
+        ], {
+          duration: 1300 + Math.random() * 700,
+          easing: 'cubic-bezier(.2,.8,.2,1)'
+        });
+
+        setTimeout(() => heart.remove(), 2200);
+      }
+    }
+
+    const cards = document.querySelectorAll('.feature-card');
+    if (!isTouch && !reducedMotion) {
+      cards.forEach(card => {
+        card.addEventListener('mousemove', (e) => {
+          const rect = card.getBoundingClientRect();
+          const x = e.clientX - rect.left;
+          const y = e.clientY - rect.top;
+          const rotateY = ((x / rect.width) - 0.5) * 7;
+          const rotateX = ((y / rect.height) - 0.5) * -7;
+          card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateY(-4px)`;
+        });
+        card.addEventListener('mouseleave', () => {
+          card.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg) translateY(0px)';
+        });
+      });
+    }
+
+    const canvas = document.getElementById('bgCanvas');
+    const ctx = canvas.getContext('2d');
+    let particles = [];
+    let width = 0;
+    let height = 0;
+    let pointerX = window.innerWidth / 2;
+    let pointerY = window.innerHeight / 2;
+
+    if (!isTouch) {
+      window.addEventListener('mousemove', (e) => {
+        pointerX = e.clientX;
+        pointerY = e.clientY;
+      });
+    }
+
+    function resizeCanvas() {
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      width = window.innerWidth;
+      height = window.innerHeight;
+      canvas.width = width * dpr;
+      canvas.height = height * dpr;
+      canvas.style.width = width + 'px';
+      canvas.style.height = height + 'px';
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      initParticles();
+    }
+
+    function initParticles() {
+      const density = isTouch ? 34 : 56;
+      const count = Math.max(isTouch ? 24 : 34, Math.floor(window.innerWidth / density));
+      particles = Array.from({ length: count }, () => ({
+        x: Math.random() * width,
+        y: Math.random() * height,
+        r: Math.random() * 1.6 + 0.7,
+        dx: (Math.random() - 0.5) * (isTouch ? 0.14 : 0.24),
+        dy: (Math.random() - 0.5) * (isTouch ? 0.14 : 0.24),
+        glow: Math.random() * 0.45 + 0.2,
+        kind: Math.random() > 0.82 ? 'heart' : 'dot'
+      }));
+    }
+
+    function drawHeart(x, y, size, alpha) {
+      ctx.save();
+      ctx.translate(x, y);
+      ctx.scale(size, size);
+      ctx.beginPath();
+      ctx.moveTo(0, 0.3);
+      ctx.bezierCurveTo(0, -0.3, -0.5, -0.3, -0.5, 0.1);
+      ctx.bezierCurveTo(-0.5, 0.45, 0, 0.75, 0, 1);
+      ctx.bezierCurveTo(0, 0.75, 0.5, 0.45, 0.5, 0.1);
+      ctx.bezierCurveTo(0.5, -0.3, 0, -0.3, 0, 0.3);
+      ctx.closePath();
+      ctx.fillStyle = `rgba(255, 140, 195, ${alpha})`;
+      ctx.shadowBlur = 15;
+      ctx.shadowColor = 'rgba(255, 94, 168, 0.4)';
+      ctx.fill();
+      ctx.restore();
+    }
+
+    function animateCanvas() {
+      if (reducedMotion) return;
+      ctx.clearRect(0, 0, width, height);
+      for (let i = 0; i < particles.length; i++) {
+        const p = particles[i];
+        p.x += p.dx;
+        p.y += p.dy;
+
+        if (p.x < -20) p.x = width + 20;
+        if (p.x > width + 20) p.x = -20;
+        if (p.y < -20) p.y = height + 20;
+        if (p.y > height + 20) p.y = -20;
+
+        let alpha = p.glow;
+        if (!isTouch) {
+          const dist = Math.hypot(pointerX - p.x, pointerY - p.y);
+          if (dist < 120) alpha += (120 - dist) / 220;
+        }
+
+        if (p.kind === 'heart') {
+          drawHeart(p.x, p.y, p.r * 2.1, Math.min(alpha, 0.92));
+        } else {
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(236, 226, 255, ${Math.min(alpha, 0.86)})`;
+          ctx.shadowBlur = 12;
+          ctx.shadowColor = 'rgba(177, 107, 255, 0.26)';
+          ctx.fill();
+        }
+
+        const linkDistance = isTouch ? 85 : 110;
+        for (let j = i + 1; j < particles.length; j++) {
+          const q = particles[j];
+          const d = Math.hypot(p.x - q.x, p.y - q.y);
+          if (d < linkDistance) {
+            ctx.beginPath();
+            ctx.moveTo(p.x, p.y);
+            ctx.lineTo(q.x, q.y);
+            ctx.strokeStyle = `rgba(255,255,255,${(1 - d / linkDistance) * (isTouch ? 0.045 : 0.075)})`;
+            ctx.lineWidth = 1;
+            ctx.stroke();
+          }
+        }
+      }
+      requestAnimationFrame(animateCanvas);
+    }
+
+    if (!reducedMotion) {
+      window.addEventListener('resize', resizeCanvas);
+      resizeCanvas();
+      animateCanvas();
+    }
+  </script>
+</body>
+</html>
